@@ -81,10 +81,10 @@ Client ID と Client Secret だけでなくリダイレクトURLとscopeの変�
 ```
 ;; コメントは ;; です。 (matrixだと # や // を多用するため)
 userAgent Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36
-server matrix.juggler.jp
-room !hhHXgRobyeOzxDPGkA:matrix.juggler.jp
-user kaede
-password XXXXXX
+server matrix.org
+room !hhHXgRobyeOzxDPGkA:matrix.org
+user replaceme
+password replaceme
 ;;verbose 1
 ;;token XXXXXXXXXXXXXXX
 ```
