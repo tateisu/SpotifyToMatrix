@@ -112,3 +112,7 @@ chmod 755 currentGet.pl
 ```
 */2 * * * *  cd /x/spotifyToMatrix && ./currentGet.pl >>/x/spotifyToMatrix/cron.log 2>&1
 ```
+
+## このスクリプトでやらないこと
+
+URLプレビューを出すのはSynapseの設定変更でやれるやつです。 https://lemmy.juggler.jp/post/794
