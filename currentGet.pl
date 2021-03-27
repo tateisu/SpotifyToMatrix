@@ -127,7 +127,14 @@ sub cachedGet{
 	my $bytes = $res->content;
 	$lastBytes = $bytes;
 	saveFile($cacheFile,$bytes);
-	return decode_json $bytes;
+
+	$bytes or die "empty response. $url\n";
+
+	my $root = eval{ decode_json $bytes };
+	return $root if not $@;
+
+ 	say "content=",$utf8->decode($bytes);
+	die $@;
 }
 
 # Get Information About The User's Current Playback
@@ -139,7 +146,10 @@ my $name = $root->{item}{name} or exit;
 my $artist = join ", ",map{ $_->{name} } @{$root->{item}{artists}};
 $artist and $name = "$name / $artist";
 
-my @urls = grep{ defined $_ and length $_ } ($root->{item}{album}{external_urls}{spotify},$root->{context}{external_urls}{spotify});
+my @urls = grep{ defined $_ and length $_ } (
+	$root->{item}{external_urls}{spotify},
+	$root->{item}{album}{external_urls}{spotify},
+	$root->{context}{external_urls}{spotify} );
 @urls or exit;
 
 my $text = join(" ",$name,$urls[0]);
