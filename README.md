@@ -115,4 +115,6 @@ chmod 755 currentGet.pl
 
 ## このスクリプトでやらないこと
 
-URLプレビューを出すのはSynapseの設定変更でやれるやつです。 https://lemmy.juggler.jp/post/794
+- URLプレビューを出すのはSynapseの設定変更でやれるやつです。 https://lemmy.juggler.jp/post/794
+- IFTTTみてて思ったんだけど、NowPlayingって「現在再生中」じゃなくて手動で再生開始したとかお気に入りしたとか言う時に出力するものなの…？
+- IFTTTだと色々できるのはSpotifyとIFTTTが何か協業してるっぽい。素のAPIだとああいうのは作りにくい。
