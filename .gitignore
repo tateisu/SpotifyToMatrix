@@ -1,0 +1,6 @@
+/cache/
+/song/
+cron.log
+login.json
+matrixLoginSecret.txt
+web-api-auth-examples/
