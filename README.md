@@ -60,7 +60,11 @@ Client ID と Client Secret だけでなくリダイレクトURLとscopeの変�
 - http://localhost:8888/ を開いてWebUIからログインする。
 - ログイン出来たらブラウザのアドレスバーからアドレスをコピーして、URL中に含まれる`access_token`と`refresh_token`をメモしておく。
 
+トークンの取得が終わったらnodeプロセスは止めても構いません。
+
 ### login.json を書く
+
+ここからはこのスクリプトの設定作業です。
 
 ```
 {
