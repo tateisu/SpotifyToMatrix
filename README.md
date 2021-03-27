@@ -13,12 +13,13 @@ cronから定期的に起動される想定です。
 - App name と App description を書く。たとえば "currentGet" や "my private app to get current playing." など。
 - 同意事項にチェックをつけてCreate。
 - Client ID と Client Secret を控えておく
+- Edit Settingsを開いてRedirect URIs に http://localhost:8888 と http://localhost:8888/callback を追加しておく。
 
 ### oAuth認証用のWebアプリを一時的に動かす
 
 https://github.com/spotify/web-api-auth-examples を使う。
 
-- node.js をインストールしておく。
+- 作業PC(localhostをブラウザで開けるPC)に node.js をインストールしておく。
 - git clone git@github.com:spotify/web-api-auth-examples.git
 - cd web-api-auth-examples.git
 - npm install
