@@ -15,7 +15,7 @@ cron+perlできて
 - 同意事項にチェックをつけてCreate。
 - Client ID と Client Secret を控えておく
 
-### oAuth認証用のWebアプリを一時的に動かす。
+### oAuth認証用のWebアプリを一時的に動かす
 
 https://github.com/spotify/web-api-auth-examples を使う。
 
@@ -61,7 +61,7 @@ Client ID と Client Secret だけでなくリダイレクトURLとscopeの変�
 - http://localhost:8888/ を開いてWebUIからログインする。
 - ログイン出来たらブラウザのアドレスバーからアドレスをコピーして、URL中に含まれる`access_token`と`refresh_token`をメモしておく。
 
-### login.json を書く。
+### login.json を書く
 
 ```
 {
@@ -76,7 +76,7 @@ Client ID と Client Secret だけでなくリダイレクトURLとscopeの変�
 - chmod 600 login.json
 - このファイルはログイン情報を含む&botスクリプトから上書きするのでパーミッションに注意。
 
-### matrixLoginSecret.txt を書く。
+### matrixLoginSecret.txt を書く
 
 ```
 ;; コメントは ;; です。 (matrixだと # や // を多用するため)
