@@ -104,3 +104,8 @@ chmod 755 currentGet.pl
 
 うまく動けばSpotyfyからデータを取ってきてMatrixの部屋に曲名、アーティスト、アルバムURLを送ります。
 
+## cronに登録する
+
+```
+*/2 * * * *  cd /x/spotifyToMatrix && ./currentGet.pl >>/x/spotifyToMatrix/cron.log 2>&1
+```
