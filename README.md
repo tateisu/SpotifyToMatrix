@@ -75,11 +75,18 @@ index 9b8a6b5..ba7157a 100644
 
 Client ID と Client Secret だけでなくリダイレクトURLとscopeの変更が必要。
 
-- 変更できたら`cd authorization_code && node app.js` でHTTPサーバを動かす。
-- http://localhost:8888/ を開いてWebUIからログインする。
-- ログイン出来たらブラウザのアドレスバーからアドレスをコピーして、URL中に含まれる`access_token`と`refresh_token`をメモしておく。
+変更して保存したらWebアプリを動かします。
+```
+cd authorization_code
+node app.js
+```
 
-トークンの取得が終わったらnodeプロセスは止めても構いません。
+### Webアプリを利用してOAuth認証を行う
+
+http://localhost:8888/ を開いてあなたのSpotifyアカウントとの連携処理を済ませます。
+連携が出来たら**ブラウザのアドレスバーからURLを全部コピーして**、URL中に含まれる`access_token=***`と`refresh_token=***`をメモしておきます。
+
+トークンの取得が終わったら、WebアプリはCTRL-Cで終了させて構いません。
 
 ### Perl モジュールのインストール
 
