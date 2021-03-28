@@ -81,9 +81,35 @@ Client ID と Client Secret だけでなくリダイレクトURLとscopeの変�
 
 トークンの取得が終わったらnodeプロセスは止めても構いません。
 
-### login.json を書く
+### Perl モジュールのインストール
 
 ここからはこのスクリプトの設定作業です。
+
+以下のPerlモジュールをインストールします。
+
+- Attribute::Constant
+- Crypt::SSLeay
+- Data::Dump
+- HTML::Entities
+- JSON::XS
+- LWP::UserAgent
+- URI::Escape
+
+雑にやるなら[cpanminus](https://metacpan.org/pod/App::cpanminus) を入れてから
+```
+sudo cpanm  Attribute::Constant
+sudo cpanm  Crypt::SSLeay
+sudo cpanm  Data::Dump
+sudo cpanm  HTML::Entities
+sudo cpanm  JSON::XS
+sudo cpanm  LWP::UserAgent
+sudo cpanm  URI::Escape
+```
+するのがお手軽だと思います。
+
+### login.json を書く
+
+以下のようなjsonを書いてlogin.jsonという名前で保存します。
 
 ```
 {
@@ -93,12 +119,14 @@ Client ID と Client Secret だけでなくリダイレクトURLとscopeの変�
   "accessToken": "YYYYY"
 }
 ```
-- 上記のようなjsonを書いてlogin.jsonという名前で保存する。
-- 各パラメータの値はこれまでメモしたものに置き換える。
-- chmod 600 login.json
-- このファイルはログイン情報を含む&botスクリプトから上書きするのでパーミッションに注意。
+
+- 各パラメータの値はこれまでメモしたものに置き換えます。
+- 注意：このファイルはbotスクリプトから上書きするので、ファイルとそれを含むフォルダにはスクリプト実行ユーザの書き込み権限が必要です。
+- 注意：ログイン情報を含むので `chmod 0600 login.json` しておきましょう。
 
 ### matrixLoginSecret.txt を書く
+
+以下のようなテキストを書いてmatrixLoginSecret.txt という名前で保存します。
 
 ```
 ;; コメントは ;; です。 (matrixだと # や // を多用するため)
@@ -111,11 +139,10 @@ password replaceme
 ;;token XXXXXXXXXXXXXXX
 ```
 
-- 上記のようなテキストを書いてmatrixLoginSecret.txt という名前で保存する。
-- roomは内部部屋ID。Elementだと部屋の設定の詳細に記載されている。
+- roomは内部部屋IDです。Elementだと部屋の設定の詳細に記載されています。
 - (optional) verboseが1だとログイン直後にアクセストークンを標準出力に出す。
 - (optional) tokenを指定する(コメントではなくする)とuser,passを使わず指定されたトークンを使う。
-- ログイン情報を含むので chmod 0600 matrixLoginSecret.txt しておく
+- 注意：ログイン情報を含むので `chmod 0600 matrixLoginSecret.txt` しておきましょう。
 
 ### currentGet.pl を動かす
 
@@ -126,12 +153,13 @@ chmod 755 currentGet.pl
 
 うまく動けばSpotyfyからデータを取ってきてMatrixの部屋に曲名、アーティスト、アルバムURLを送ります。
 
-## cronに登録する
+### cronに登録する
 
 ```
 */2 * * * *  cd /x/spotifyToMatrix && ./currentGet.pl >>/x/spotifyToMatrix/cron.log 2>&1
 ```
 
+----
 ## このスクリプトでやらないこと
 
 - URLプレビューを出すのはSynapseの設定変更でやれるやつです。 https://lemmy.juggler.jp/post/794
