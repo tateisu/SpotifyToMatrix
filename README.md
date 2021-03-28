@@ -151,7 +151,7 @@ chmod 755 currentGet.pl
 ./currentGet.pl
 ```
 
-うまく動けばSpotyfyからデータを取ってきてMatrixの部屋に曲名、アーティスト、アルバムURLを送ります。
+うまく動けばSpotyfyからデータを取ってきてMatrixの部屋に曲名、アーティスト、トラックURLを送ります。
 
 ### cronに登録する
 
