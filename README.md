@@ -8,6 +8,22 @@ cronから定期的に起動される想定です。
 ----
 ## どう使うの
 
+### 作業PCの用意
+
+SpotifyのOAuth認証のため一時的にWebアプリを動かしてブラウザからアクセスする必要があります。
+Webアプリを動かすホストと、それをブラウザから見る際のホスト名/IPアドレスを整理しておいてください。
+
+- Webアプリを動かすホストにはnode.js をインストールして`node`や`npm`コマンドが使える状態にします。
+- ↑のホストをブラウザから見れるホスト名/IPアドレスを決めます(A)
+- (A)のホストのポート8888が空いてないなら別のポート番号を決めます(B)
+
+次にSpotifyのOAuth認証で使うコールバックURLを決めます。
+- http://localhost:8888 
+- http://localhost:8888/callback
+`localhost` や `8888` の部分は(A)や(B)の条件により変化するかもしれません。
+以下の説明でコールバックURLが出てくる部分は適時置き換えてください。
+
+
 ### Spotify APIを使うアプリの登録
 - [Spotifyの開発者ダッシュボード](https://developer.spotify.com/dashboard/applications) を開いてMy New App を選ぶ。
 - App name と App description を書く。たとえば "currentGet" や "my private app to get current playing." など。
@@ -17,9 +33,9 @@ cronから定期的に起動される想定です。
 
 ### oAuth認証用のWebアプリを一時的に動かす
 
-https://github.com/spotify/web-api-auth-examples を使う。
+Spotifyが用意してるOAuth認証サンプルWebアプリhttps://github.com/spotify/web-api-auth-examples を
+お手元のPCに設置して動かします。
 
-- 作業PC(localhostをブラウザで開けるPC)に node.js をインストールしておく。
 - git clone git@github.com:spotify/web-api-auth-examples.git
 - cd web-api-auth-examples.git
 - npm install
