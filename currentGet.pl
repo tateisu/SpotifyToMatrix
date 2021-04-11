@@ -21,9 +21,37 @@ use MatrixPoster;
 binmode $_,":utf8" for \*STDOUT,\*STDERR;
 my $utf8 = Encode::find_encoding('utf8');
 
+sub lengthBytes($){
+	use bytes;
+	return length $_[0];
+}
+sub substrBytes{
+	use bytes;
+	return substr($_[0],$_[1],$_[2]);
+}
+
+sub trimValidUtf8($){
+	use bytes;
+	$_[0] =~ /((?:[\x00-\x7F]|[\xC2-\xDF][\x80-\xBF]{1}|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF4][\x80-\xBF]{3})*)/;
+	return $1;
+}
+
+my $fileNameMaxBytes = 255-8; # -8 for ".tmpXXXX"
+my $ellipsis = "…";
+my $ellipsisBytes = lengthBytes $ellipsis;
+
 sub safeName($){
 	my($a)=@_;
 	$a =~ s%[\\/:*?"<>|_]+%_%g;
+
+	# linuxではファイル名(not include parent folder)は255バイトまで
+	my $lb = lengthBytes($a);
+	if($lb>$fileNameMaxBytes){
+		$a = trimValidUtf8 substrBytes($a,0,$fileNameMaxBytes-$ellipsisBytes);
+		utf8::decode($a);
+		$a .= $ellipsis;
+	}
+
 	$a;
 }
 
@@ -35,9 +63,10 @@ sub loadFile($){
 	close($fh) or die "$fname $!";
 	$data;
 }
+
 sub saveFile($$){
 	my($fname,$data) = @_;
-	my $tmpFile = "$fname.tmp$$";
+	my $tmpFile = "$fname.tmp".substr($$,-4);
 	open(my $fh,">:raw",$tmpFile) or die "$tmpFile $!";
 	print $fh $data;
 	close($fh) or die "$tmpFile $!";
@@ -137,6 +166,7 @@ sub cachedGet{
 	die $@;
 }
 
+
 # Get Information About The User's Current Playback
 $root = cachedGet("https://api.spotify.com/v1/me/player");
 
@@ -152,17 +182,20 @@ my @urls = grep{ defined $_ and length $_ } (
 	$root->{context}{external_urls}{spotify} );
 @urls or exit;
 
-my $text = join(" ",$name,$urls[0]);
-say $text;
 
 # 最近書いた曲を除外する
 my $songDir = "./song";
 mkdir $songDir;
-my $songFile = $songDir."/". safeName($text);
+my $songFile = $songDir."/". safeName( join(" ",$urls[0],$name));
 my @st = stat($songFile);
-exit if @st && $st[9] >= time - 86400*7;
+if( @st && $st[9] >= time - 86400*7){
+	say "skip: exists $songFile";
+	exit;
+}
 
 # Matrixに出力
+my $text = join(" ",$name,$urls[0]);
+say $text;
 my $poster = MatrixPoster->new( configFile => './matrixLoginSecret.txt');
 
 $poster->postText($poster->{room},$text);
