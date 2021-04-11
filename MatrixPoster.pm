@@ -1,5 +1,5 @@
 package MatrixPoster;
-$MatrixPoster::VERSION = '0.20210314'; # YYYYMMDD
+$MatrixPoster::VERSION = '0.20210411'; # YYYYMMDD
 
 use strict;
 use warnings;
@@ -12,7 +12,6 @@ use HTML::Entities;
 use LWP::UserAgent;
 use Attribute::Constant;
 use feature qw(say);
-
 
 my $utf8 = Encode::find_encoding("utf8");
 

@@ -9,37 +9,47 @@ use JSON::XS;
 use MIME::Base64;
 use Data::Dump qw(dump);
 use Encode;
-use Module::Load;
 
 # スクリプトのあるフォルダを依存関係に追加する
 use FindBin 1.51 qw( $RealBin );
 use lib $RealBin;
 
+use MatrixPoster;
+
 binmode $_,":utf8" for \*STDOUT,\*STDERR;
 my $utf8 = Encode::find_encoding('utf8');
+
+my $cacheDir = "./cache";
+mkdir $cacheDir;
+
+my $songDir = "./song";
+mkdir $songDir;
 
 #############################################################
 # 既出チェックのファイル名が255バイトを超えないようにする
 
+# UTF8文字列のバイト数
 sub lengthBytes($){
 	use bytes;
-	return length $_[0];
+	length $_[0];
 }
 
+# UTF8文字列をバイト指定でsubstr
 sub substrBytes{
 	use bytes;
-	return substr($_[0],$_[1],$_[2]);
+	substr($_[0],$_[1],$_[2]);
 }
 
+# 有効なUTF8文字列を抽出
 sub trimValidUtf8($){
 	use bytes;
 	$_[0] =~ /((?:[\x00-\x7F]|[\xC2-\xDF][\x80-\xBF]{1}|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF4][\x80-\xBF]{3})*)/;
-	return $1;
+	$1;
 }
 
+my $fileNameMaxBytes = 255-8; # -8 for ".tmpXXXX"
 my $ellipsis = "…";
 my $ellipsisBytes = lengthBytes $ellipsis;
-my $fileNameMaxBytes = 255-8; # -8 for ".tmpXXXX"
 
 sub safeName($){
 	my($a)=@_;
@@ -47,7 +57,7 @@ sub safeName($){
 	# ファイル名に使えない文字を浄化する
 	$a =~ s%[\\/:*?"<>|_]+%_%g;
 
-	# linuxではファイル名は255バイトまで
+	# ファイル名に使えるバイト数
 	my $lb = lengthBytes($a);
 	if($lb>$fileNameMaxBytes){
 		$a = trimValidUtf8 substrBytes($a,0,$fileNameMaxBytes-$ellipsisBytes);
@@ -77,6 +87,8 @@ sub saveFile($$){
 	close($fh) or die "$tmpFile $!";
 	rename($tmpFile,$fname) or die "$fname $!";
 }
+
+################################################################
 
 my $ua = LWP::UserAgent->new(
 	timeout => 30,
@@ -136,8 +148,6 @@ if( $loginInfo->{expiresAt}
 	}
 }
 
-my $cacheDir = "./cache";
-mkdir $cacheDir;
 
 my $lastBytes;
 sub cachedGet{
@@ -171,7 +181,6 @@ sub cachedGet{
 	die $@;
 }
 
-
 # Get Information About The User's Current Playback
 $root = cachedGet("https://api.spotify.com/v1/me/player");
 
@@ -187,10 +196,9 @@ my @urls = grep{ defined $_ and length $_ } (
 	$root->{context}{external_urls}{spotify} );
 @urls or exit;
 
-
+###########################################################
 # 最近書いた曲を除外する
-my $songDir = "./song";
-mkdir $songDir;
+
 my $songFile = $songDir."/". safeName( join(" ",$urls[0],$name));
 my @st = stat($songFile);
 if( @st && $st[9] >= time - 86400*7){
@@ -198,12 +206,12 @@ if( @st && $st[9] >= time - 86400*7){
 	exit;
 }
 
-# Matrixに出力
 my $text = join(" ",$name,$urls[0]);
 say $text;
 
-# アプリ内のモジュール
-Module::Load::load MatrixPoster;
+###################################################
+
+# Matrixに出力
 my $poster = MatrixPoster->new( configFile => './matrixLoginSecret.txt');
 $poster->postText($poster->{room},$text);
 
