@@ -9,22 +9,23 @@ use JSON::XS;
 use MIME::Base64;
 use Data::Dump qw(dump);
 use Encode;
+use Module::Load;
 
 # スクリプトのあるフォルダを依存関係に追加する
 use FindBin 1.51 qw( $RealBin );
 use lib $RealBin;
 
-# アプリ内のモジュール
-use MatrixPoster;
-
-
 binmode $_,":utf8" for \*STDOUT,\*STDERR;
 my $utf8 = Encode::find_encoding('utf8');
+
+#############################################################
+# 既出チェックのファイル名が255バイトを超えないようにする
 
 sub lengthBytes($){
 	use bytes;
 	return length $_[0];
 }
+
 sub substrBytes{
 	use bytes;
 	return substr($_[0],$_[1],$_[2]);
@@ -36,15 +37,17 @@ sub trimValidUtf8($){
 	return $1;
 }
 
-my $fileNameMaxBytes = 255-8; # -8 for ".tmpXXXX"
 my $ellipsis = "…";
 my $ellipsisBytes = lengthBytes $ellipsis;
+my $fileNameMaxBytes = 255-8; # -8 for ".tmpXXXX"
 
 sub safeName($){
 	my($a)=@_;
+	
+	# ファイル名に使えない文字を浄化する
 	$a =~ s%[\\/:*?"<>|_]+%_%g;
 
-	# linuxではファイル名(not include parent folder)は255バイトまで
+	# linuxではファイル名は255バイトまで
 	my $lb = lengthBytes($a);
 	if($lb>$fileNameMaxBytes){
 		$a = trimValidUtf8 substrBytes($a,0,$fileNameMaxBytes-$ellipsisBytes);
@@ -54,6 +57,8 @@ sub safeName($){
 
 	$a;
 }
+
+################################################################
 
 sub loadFile($){
 	my($fname) = @_;
@@ -196,8 +201,10 @@ if( @st && $st[9] >= time - 86400*7){
 # Matrixに出力
 my $text = join(" ",$name,$urls[0]);
 say $text;
-my $poster = MatrixPoster->new( configFile => './matrixLoginSecret.txt');
 
+# アプリ内のモジュール
+Module::Load::load MatrixPoster;
+my $poster = MatrixPoster->new( configFile => './matrixLoginSecret.txt');
 $poster->postText($poster->{room},$text);
 
 # 最近出力したファイルを覚える
